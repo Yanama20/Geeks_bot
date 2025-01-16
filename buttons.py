@@ -8,9 +8,9 @@ start = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2).add(
     KeyboardButton('/quiz'),
     KeyboardButton('/reply_webapp'),
     KeyboardButton('/inline_webapp'),
-    KeyboardButton('/registration'))
+    KeyboardButton('/product_registration'))
 
-
+size = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2).add(KeyboardButton('XS'),KeyboardButton('S'),KeyboardButton('M'),KeyboardButton('L'),KeyboardButton('XL'),KeyboardButton('XXL'),KeyboardButton('XXXL'),)
 submit = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2, one_time_keyboard=True).add(KeyboardButton('да'), KeyboardButton('нет'))
 
 remove_keyboard = ReplyKeyboardRemove()

@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, types
 
 
+# @dp.message_handler()
 async def echo_handler(message: types.Message):
     await message.answer(message.text)
 
