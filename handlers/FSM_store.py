@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 import buttons
 from db import main_db
 
-# название товара, размер, категория, стоимость и фото товара.
+
 class FSM_store(StatesGroup):
     name_product = State()
     size = State()
@@ -13,6 +13,7 @@ class FSM_store(StatesGroup):
     price = State()
     productid = State()
     infoproduct = State()
+    collection = State()
     photo = State()
     submit = State()
 
@@ -60,12 +61,20 @@ async def load_productid(message: types.Message, state: FSMContext):
         data['productid'] = message.text
 
     await FSM_store.next()
-    await message.answer('Напишите описание продукта:')
+    await message.answer('Напишите описание товара:')
 
 
 async def load_infoproduct(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['infoproduct'] = message.text
+
+    await FSM_store.next()
+    await message.answer('Напишите коллекцию товара:')
+
+
+async def load_collection(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['collection'] = message.text
 
     await FSM_store.next()
     await message.answer('Отправьте фотографию товара:')
@@ -83,6 +92,7 @@ async def load_photo(message: types.Message, state: FSMContext):
                                     f'Категория - {data["category"]}\n'
                                     f'Стоимость - {data["price"]}\n'
                                     f'Артикул - {data["productid"]}\n'
+                                    f'Коллекция - {data["collection"]}\n'
                                     f'Описание товара - {data["infoproduct"]}', reply_markup=buttons.submit)
 
 
@@ -101,6 +111,10 @@ async def submit(message: types.Message, state: FSMContext):
                 category=data['category'],
                 productid=data['productid'],
                 infoproduct=data['infoproduct'],
+            )
+            await main_db.sql_insert_collection(
+                productid=data['productid'],
+                collection=data['collection'],
             )
             await message.answer('Ваши данные в базе', reply_markup=buttons.remove_keyboard)
 
@@ -131,5 +145,6 @@ def register_handlers_fsm_reg(dp: Dispatcher):
     dp.register_message_handler(load_price, state=FSM_store.price)
     dp.register_message_handler(load_productid, state=FSM_store.productid)
     dp.register_message_handler(load_infoproduct, state=FSM_store.infoproduct)
+    dp.register_message_handler(load_collection, state=FSM_store.collection)
     dp.register_message_handler(load_photo, state=FSM_store.photo, content_types=['photo'])
     dp.register_message_handler(submit, state=FSM_store.submit)
