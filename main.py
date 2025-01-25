@@ -1,9 +1,12 @@
 from aiogram import executor
 import logging
 from config import bot, Admins, dp
-from handlers import commands, echo, quiz, webapp, FSM_store
+from db.main_db import fetch_all_products
+from handlers import commands, echo, quiz, webapp, FSM_store, delete_products, send_products
 import buttons
 from db import main_db
+from handlers.send_products import send_all_products
+
 
 async def on_startup(_):
     for admin in Admins:
@@ -16,6 +19,8 @@ commands.register_handlers(dp)
 quiz.register_handlers(dp)
 webapp.register_handlers(dp)
 FSM_store.register_handlers_fsm_reg(dp)
+send_products.register_handlers(dp)
+delete_products.register_handlers(dp)
 echo.register_handlers(dp)
 
 if __name__ == '__main__':

@@ -30,3 +30,28 @@ async def sql_insert_collection(collection, productid):
         collection, productid
     ))
     db.commit()
+
+# CRUD - 1
+#=====================================================================================================
+
+def get_db_connection():
+    conn = sqlite3.connect('db/store.sqlite3')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def fetch_all_products():
+    conn = get_db_connection()
+    products = conn.execute('''SELECT * FROM store
+    INNER JOIN products_details ON store.productid = products_details.productid
+    INNER JOIN collections ON store.productid = collections.productid''').fetchall()
+    conn.close()
+    return products
+
+def delete_product(productid):
+    conn = get_db_connection()
+
+    conn.execute('DELETE FROM store WHERE productid = ?', (productid,))
+    conn.execute('DELETE FROM products_details WHERE productid = ?', (productid,))
+    conn.execute('DELETE FROM collections WHERE productid = ?', (productid,))
+    conn.commit()
+    conn.close()
