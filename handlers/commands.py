@@ -1,7 +1,7 @@
 from aiogram import Dispatcher, types
 from config import bot
 import os
-
+from random import choice
 
 async def start_handler(message: types.Message):
     await bot.send_message(chat_id=message.from_user.id,
@@ -31,10 +31,28 @@ async def sqr_handler(message: types.Message):
         sqr = num ** 2
         await bot.send_message(chat_id=message.from_user.id,
                              text=f'Квадрат вашего числа = {sqr}\n')
-
+dice_options = ['⚽', '🎰', '🏀', '🎯', '🎳', '🎲']
 async def game_dice(message: types.Message):
-    await bot.send_dice(chat_id=message.from_user.id,
-                        emoji='🏀')
+    random_dice = choice(dice_options)
+
+    bot_message = await bot.send_dice(chat_id=message.from_user.id,emoji=random_dice)
+    bot_score = bot_message.dice.value
+    print(bot_score)
+
+    user_message = await bot.send_dice(chat_id=message.from_user.id, emoji=random_dice)
+    user_score = user_message.dice.value
+    print(user_score)
+
+    if bot_score > user_score:
+        await message.answer('Вы проиграли!')
+    elif bot_score < user_score:
+        await message.answer('Вы выйграли!')
+    elif bot_score == user_score:
+        await message.answer('Ничья!')
+
+
+    # await bot.send_dice(chat_id=message.from_user.id,
+    #                     emoji='🏀')
 
 
 def register_handlers(dp: Dispatcher):
