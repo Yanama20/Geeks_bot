@@ -55,3 +55,28 @@ def delete_product(productid):
     conn.execute('DELETE FROM collections WHERE productid = ?', (productid,))
     conn.commit()
     conn.close()
+
+#CRUD - update
+######################################
+def update_product_field(productid, field, new_value):
+    conn = get_db_connection()
+    store_table = ('name_product', 'size', 'price', 'photo')
+    products_details_table = ('category', 'infoproduct')
+    collections_table = ('collections')
+    try:
+        if field in store_table:
+            query = f'UPDATE store SET {field} = ? WHERE productid = ?'
+        elif field in products_details_table:
+            query = f'UPDATE products_details SET {field} = ? WHERE productid = ?'
+        elif field in collections_table:
+            query = f'UPDATE collections SET {field} = ? WHERE productid = ?'
+        else:
+            raise ValueError(f'Поле {field} не найдено.')
+
+        conn.execute(query,(new_value, productid))
+        conn.commit()
+    except sqlite3.OperationalError as e:
+        print(f'Ошибка - {e}')
+    finally:
+        conn.close()
+
